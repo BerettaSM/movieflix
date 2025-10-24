@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.devsuperior.movieflix.dto.MovieCardDTO;
 import com.devsuperior.movieflix.dto.MovieDetailsDTO;
+import com.devsuperior.movieflix.dto.MovieWithReviewsDTO;
 import com.devsuperior.movieflix.services.MovieService;
 
 import java.util.List;
@@ -26,6 +27,15 @@ public class MovieController {
     private MovieService movieService;
 
     @PreAuthorize("isAuthenticated()")
+    @GetMapping
+    public ResponseEntity<Page<MovieCardDTO>> findByGenre(
+            Pageable pageable,
+            @RequestParam(name = "genreId", required = false) List<Long> genreIds) {
+        Page<MovieCardDTO> page = movieService.findAllByGenre(pageable, genreIds);
+        return ResponseEntity.ok(page);
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}")
     public ResponseEntity<MovieDetailsDTO> findById(@PathVariable Long id) {
         MovieDetailsDTO movie = movieService.findById(id);
@@ -33,12 +43,10 @@ public class MovieController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping
-    public ResponseEntity<Page<MovieCardDTO>> findByGenre(
-            Pageable pageable,
-            @RequestParam(name = "genreId", required = false) List<Long> genreIds) {
-        Page<MovieCardDTO> page = movieService.findAllByGenre(pageable, genreIds);
-        return ResponseEntity.ok(page);
+    @GetMapping("/{id}/reviews")
+    public ResponseEntity<MovieWithReviewsDTO> findMovieByIdWithReviews(@PathVariable Long id) {
+        MovieWithReviewsDTO movie = movieService.findMovieByIdWithReviews(id);
+        return ResponseEntity.ok(movie);
     }
 
 }

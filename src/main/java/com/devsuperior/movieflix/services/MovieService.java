@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.movieflix.dto.MovieCardDTO;
 import com.devsuperior.movieflix.dto.MovieDetailsDTO;
+import com.devsuperior.movieflix.dto.MovieWithReviewsDTO;
 import com.devsuperior.movieflix.repositories.MovieRepository;
 import com.devsuperior.movieflix.services.exceptions.ResourceNotFoundException;
 
@@ -35,6 +36,13 @@ public class MovieService {
                     applyDefaultSort(pageable, "title"),
                     genreIds)
                 .map(MovieCardDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public MovieWithReviewsDTO findMovieByIdWithReviews(Long id) {
+        return movieRepository.findByIdWithReviews(id)
+            .map(MovieWithReviewsDTO::new)
+            .orElseThrow(() -> new ResourceNotFoundException("Movie not found"));
     }
 
     private Pageable applyDefaultSort(Pageable pageable, String sortField) {

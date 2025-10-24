@@ -1,6 +1,7 @@
 package com.devsuperior.movieflix.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     """)
     Page<Movie> findAllByGenre(Pageable pageable, @Param(value = "genreIds") List<Long> genreIds);
 
+    @EntityGraph(attributePaths = { "genre", "reviews", "reviews.user" })
+    @Query(value = """
+        FROM Movie m
+        WHERE m.id = :id        
+    """)
+    Optional<Movie> findByIdWithReviews(Long id);
+    
 }
